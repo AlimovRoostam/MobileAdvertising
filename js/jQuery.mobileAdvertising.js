@@ -1,5 +1,5 @@
 /* ========================================================================
- * Mobile advertising: v0.0.1
+ * Mobile advertising: v0.0.2
  *
  * ========================================================================
  * Copyright 2015 Alimov.
@@ -9,8 +9,6 @@
 if (typeof jQuery == 'undefined') {
     throw new Error('Mobile Advertising\'s JavaScript requires jQuery')
 }
-
-//    if(isMobile() || Mob.DEFAULTS.debug){ //Тут должно быть условие на версию development
 
 +(function($){
     'use strict';
@@ -22,20 +20,36 @@ if (typeof jQuery == 'undefined') {
         this.$element = $(element);
         this.options  = options;
 
-        var constent;
+        this.content  = {
+            // @TODO XXX Удалить эту порнографию после того как починится возврат с callback
+            colorButton: "warning",
+            content: "Lorem ipsum dolor sit amet, consectetur adipisicing elit. Adipisci alias aperiam at consectetur dignissimos distinctio doloremque enim eum eveniet illum itaque laborum nisi obcaecati omnis pariatur possimus quis recusandae reiciendis repellendus repudiandae saepe sed tempore, tenetur veniam, veritatis. Eaque facere, illo numquam odit officiis omnis pariatur porro quidem repudiandae voluptatibus!",
+            data: "18.03.2015",
+            development: "Разработчик 2",
+            imagePath: "",
+            title: "Название рекламы 2",
+            url: "http://vk.com/dr.alimov"
+        };
 
-       $.proxy( this.claim(this, function(constent){}));
-        console.log(constent)
+       $.proxy( this.claim(this, function(){
+           // @TODO FIXME - починить this должен записываться в Mob -> thi.content
+          return this;
+       }));
+
+
     };
 
-    Mob.VERSION = '0.0.1';
+    Mob.VERSION = '0.0.2';
+
     Mob.DEFAULTS = {
-        "debug" : true,
-        "jsonFolder"  : "http://chirurlx.bget.ru/assets/advertising/"
+        debug       : true,
+        jsonFolder  : "http://chirurlx.bget.ru/assets/advertising/"
     };
+
     Mob.prototype.show  = function  (e){
 
     };
+
     Mob.prototype.claim = function (e, callback) {
         var suffix = isMobile()[0].toLowerCase();
         $.ajax({
@@ -53,28 +67,17 @@ if (typeof jQuery == 'undefined') {
                     counter++;
                 });
 
-                //if(e.options.debug){
-                //    var debug = {
-                //        'Запрос ajax' : e.options.jsonFolder,
-                //        'Функция обработчик': 'Mob.prototype.claim',
-                //        'Входные параметры': e,
-                //        'Успех по запросу': data,
-                //        'Ключ поиска': keyAdvertising,
-                //        'Тип поиска по ключу': (typeof keyAdvertising == 'string') ? 'строка' : 'Случайно'
-                //
-                //    };
-                //    console.log(debug);
-                //}
             },
             error: function (data) {
 
             }
         });
     };
+
     // Mobile advertising PLUGIN DEFINITION
     // =====================
+
     function Plugin(option) {
-        console.log(option);
 
         return this.each(function () {
             var $this   = $(this),
@@ -88,18 +91,20 @@ if (typeof jQuery == 'undefined') {
 
     var old = $.fn.mobileAdvertising;
 
-    $.fn.mobileAdvertising             = Plugin;
-    $.fn.mobileAdvertising.Constructor = Mob;
+    $.fn.mobileAdvertising              = Plugin;
+    $.fn.mobileAdvertising.Constructor  = Mob;
 
     // Mobile advertising NO CONFLICT
     // ===============
-    $.fn.mobileAdvertising = function () {
+
+    $.fn.mobileAdvertising.noConflict = function () {
         $.fn.mobileAdvertising = old;
         return this
     };
 
     // Mobile advertising check devise
     // ===============
+
     function isMobile(){ // Проверка браузера мобилки (есть возможность дописать больше или разграничить технику apple)
         var Device = {
             Android: function() {
@@ -126,6 +131,7 @@ if (typeof jQuery == 'undefined') {
 
     //Mobile advertising DATA-API
     //=================
+
     $(window).on('load',function(){
         var counter = 0;
         $('[data-ride="mobile-advertising"]').each(function(){
@@ -140,12 +146,5 @@ if (typeof jQuery == 'undefined') {
                         }).appendTo('body'))
         }
     });
+
 })(jQuery);
-
-$(function(){
-    $('#qq').mobileAdvertising({
-        'debug': false,
-        'jsonFolder': '111'
-    });
-
-});
