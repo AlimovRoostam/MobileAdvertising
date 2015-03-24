@@ -1,5 +1,5 @@
 /* ========================================================================
- * Mobile advertising: v0.0.2
+ * Mobile advertising: v0.0.3
  *
  * ========================================================================
  * Copyright 2015 Alimov.
@@ -31,23 +31,67 @@ if (typeof jQuery == 'undefined') {
             url: "http://vk.com/dr.alimov"
         };
 
-       $.proxy( this.claim(this, function(){
+/*       $.proxy( this.claim(this, function(){
            // @TODO FIXME - починить this должен записываться в Mob -> thi.content
           return this;
        }));
+*/
 
+        $.proxy(this.requires(this.options));
 
+        $.proxy(this.show(this));
     };
 
-    Mob.VERSION = '0.0.2';
+    Mob.VERSION = '0.0.3';
 
     Mob.DEFAULTS = {
         debug       : true,
-        jsonFolder  : "http://chirurlx.bget.ru/assets/advertising/"
+        jsonFolder  : "http://chirurlx.bget.ru/assets/advertising/",
+        bsCss       : false,
+        bsJs        : false
     };
 
-    Mob.prototype.show  = function  (e){
+    Mob.prototype.requires = function (e) {
+        if(e.bsCss){
+            //@TODO Тут потом надо сделать проверку на доступность опциональной css и в случае успеха загрузить её
+        }
+        if(e.bsJs){
+            //@TODO Тут потом надо сделать проверку на доступность опциональной js и в случае успеха загрузить его
+        }
+    };
 
+    Mob.prototype.show  = function (e) {
+
+        console.log(e.content);
+
+        var content1 = '<div class="modal-dialog modal-sm">'+
+            '<div class="modal-content">'+
+            '<div class="modal-header color-white clearfix">'+
+
+            '<div class="col-xs-8 not-padding-w">'+
+            '<h4 class="modal-title color-white">'+ e.content.title +'</h4>'+
+            '</div>'+
+
+            '<div class="col-xs-4 not-padding-w">'+
+            '<div class="clearfix mb5px">'+
+            '<button type="button" class="close color-white" data-dismiss="modal" aria-label="Close"><span class="color-white" aria-hidden="true">&times;</span></button>'+
+            '</div>'+
+            '<a href="#" class="btn text-uppercase btn-success btn-xs notbdrs pull-right" id="myModalLinkSale">Бесплатно</a>'+
+            '</div>'+
+
+            '</div>'+
+            '<div class="modal-body" id="modalContent">'+
+            e.content.content +
+            '</div>'+
+            '<div class="modal-footer text-center" id="modalFooter">'+
+            '<div class="clearfix mb5px">'+
+            '<a href="'+ e.content.url +'" class="btn btn-'+e.content.colorButton+' text-uppercase btn-block" id="modalFooterLink"><i class="glyphicon glyphicon-download-alt"></i> Установить</a>'+
+            '</div>'+
+
+            '</div>'+
+            '</div>'+
+            '</div>'
+        e.$element.append(content1).fadeIn('slow');
     };
 
     Mob.prototype.claim = function (e, callback) {
@@ -141,9 +185,7 @@ if (typeof jQuery == 'undefined') {
         });
 
         if(!counter){
-            Plugin.call($('<div/>',{
-                            'data-ride': 'mobile-advertising'
-                        }).appendTo('body'))
+            Plugin.call($('<div/>',{'data-ride': 'mobile-advertising'}).appendTo('body'))
         }
     });
 
