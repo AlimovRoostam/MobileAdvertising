@@ -1,5 +1,5 @@
 /* ========================================================================
- * Mobile advertising: v0.0.3
+ * Mobile advertising: v0.0.4
  *
  * ========================================================================
  * Copyright 2015 Alimov.
@@ -42,7 +42,7 @@ if (typeof jQuery == 'undefined') {
         $.proxy(this.show(this));
     };
 
-    Mob.VERSION = '0.0.3';
+    Mob.VERSION = '0.0.4';
 
     Mob.DEFAULTS = {
         debug       : true,
@@ -69,6 +69,10 @@ if (typeof jQuery == 'undefined') {
             '<div class="modal-header color-white clearfix">'+
 
             '<div class="col-xs-8 not-padding-w">'+
+                //$('<h4/>', {
+                //    class: "modal-title color-white",
+                //    text: e.content.title
+                //});
             '<h4 class="modal-title color-white">'+ e.content.title +'</h4>'+
             '</div>'+
 
@@ -76,16 +80,16 @@ if (typeof jQuery == 'undefined') {
             '<div class="clearfix mb5px">'+
             '<button type="button" class="close color-white" data-dismiss="modal" aria-label="Close"><span class="color-white" aria-hidden="true">&times;</span></button>'+
             '</div>'+
-            '<a href="#" class="btn text-uppercase btn-success btn-xs notbdrs pull-right" id="myModalLinkSale">Бесплатно</a>'+
+            '<a href="' + e.content.url + '" class="btn text-uppercase btn-success btn-xs notbdrs pull-right">Бесплатно</a>'+
             '</div>'+
 
             '</div>'+
-            '<div class="modal-body" id="modalContent">'+
+            '<div class="modal-body">'+
             e.content.content +
             '</div>'+
-            '<div class="modal-footer text-center" id="modalFooter">'+
+            '<div class="modal-footer text-center">'+
             '<div class="clearfix mb5px">'+
-            '<a href="'+ e.content.url +'" class="btn btn-'+e.content.colorButton+' text-uppercase btn-block" id="modalFooterLink"><i class="glyphicon glyphicon-download-alt"></i> Установить</a>'+
+            '<a href="'+ e.content.url +'" class="btn btn-'+e.content.colorButton+' text-uppercase btn-block"><i class="glyphicon glyphicon-download-alt"></i> Установить</a>'+
             '</div>'+
 
             '</div>'+
