@@ -44,6 +44,7 @@ if (typeof jQuery == 'undefined') {
 
     Mob.VERSION = '0.0.4';
 
+
     Mob.DEFAULTS = {
         debug       : true,
         jsonFolder  : "http://chirurlx.bget.ru/assets/advertising/",
