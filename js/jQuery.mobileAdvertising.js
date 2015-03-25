@@ -1,5 +1,5 @@
 /* ========================================================================
- * Mobile advertising: v0.0.4
+ * Mobile advertising: v0.0.6
  *
  * ========================================================================
  * Copyright 2015 Alimov.
@@ -19,51 +19,34 @@ if (typeof jQuery == 'undefined') {
     var Mob = function (element, options) {
         this.$element = $(element);
         this.options  = options;
-
-        this.content  = {
-            // @TODO XXX Удалить эту порнографию после того как починится возврат с callback
-            colorButton: "warning",
-            content: "Lorem ipsum dolor sit amet, consectetur adipisicing elit. Adipisci alias aperiam at consectetur dignissimos distinctio doloremque enim eum eveniet illum itaque laborum nisi obcaecati omnis pariatur possimus quis recusandae reiciendis repellendus repudiandae saepe sed tempore, tenetur veniam, veritatis. Eaque facere, illo numquam odit officiis omnis pariatur porro quidem repudiandae voluptatibus!",
-            data: "18.03.2015",
-            development: "Разработчик 2",
-            imagePath: "",
-            title: "Название рекламы 2",
-            url: "http://vk.com/dr.alimov"
-        };
-
-/*       $.proxy( this.claim(this, function(){
-           // @TODO FIXME - починить this должен записываться в Mob -> thi.content
-          return this;
-       }));
-*/
+        this.content = {};
 
         $.proxy(this.requires(this.options));
 
-        $.proxy(this.show(this));
+        $.proxy(this.claim(this, function(){
+            $.proxy(this.show(this));
+       }));
     };
 
-    Mob.VERSION = '0.0.4';
+    Mob.VERSION = '0.0.6';
 
 
     Mob.DEFAULTS = {
-        debug       : true,
-        jsonFolder  : "http://chirurlx.bget.ru/assets/advertising/",
-        bsCss       : false,
-        bsJs        : false
+        debug           : true,
+        'json_folder'   : "http://chirurlx.bget.ru/assets/advertising/1",
+        'bs_css'        : true
     };
 
     Mob.prototype.requires = function (e) {
-        if(e.bsCss){
-            //@TODO Тут потом надо сделать проверку на доступность опциональной css и в случае успеха загрузить её
-        }
-        if(e.bsJs){
-            //@TODO Тут потом надо сделать проверку на доступность опциональной js и в случае успеха загрузить его
+        if(e.bs_css.toString()){
+            $('<link/>',{
+                href: (typeof e.bs_css == "boolean" || e.bs_css == "true") ? e.bs_css = 'http://chirurlx.bget.ru/assets/css/bootstrap.css' : e.bs_css,
+                rel: 'stylesheet'
+            }).appendTo('head');
         }
     };
 
     Mob.prototype.show  = function (e) {
-
-        console.log(e.content);
 
         var content1 = '<div class="modal-dialog modal-sm">'+
             '<div class="modal-content">'+
@@ -90,19 +73,19 @@ if (typeof jQuery == 'undefined') {
             '</div>'+
             '<div class="modal-footer text-center">'+
             '<div class="clearfix mb5px">'+
-            '<a href="'+ e.content.url +'" class="btn btn-'+e.content.colorButton+' text-uppercase btn-block"><i class="glyphicon glyphicon-download-alt"></i> Установить</a>'+
+            '<a href="'+ e.content.url +'" class="btn btn-'+e.content.colorButton+' text-uppercase btn-block"><i class="glyphicon glyphicon-download-alt"></i> '+ e.content.textButton +'</a>'+
             '</div>'+
 
             '</div>'+
             '</div>'+
-            '</div>'
+            '</div>';
         e.$element.append(content1).fadeIn('slow');
     };
 
     Mob.prototype.claim = function (e, callback) {
         var suffix = isMobile()[0].toLowerCase();
         $.ajax({
-            url: e.options.jsonFolder + suffix + '.json',
+            url: e.options.json_folder + suffix + '.json',
             dataType: "json",
             success: function (data) {
                 var keyAdvertising  = (suffix in e.options) ? e.options[suffix] : Math.round(0.5 + Math.random() * (Object.keys(data).length)),
@@ -110,7 +93,8 @@ if (typeof jQuery == 'undefined') {
 
                 $.each(data, function (i, val) {
                     if (keyAdvertising == i || keyAdvertising == counter) {
-                        callback.call(val[0]);
+                        e.content = val[0];
+                        callback.call(e);
                         return false;
                     }
                     counter++;
