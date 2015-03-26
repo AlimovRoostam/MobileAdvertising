@@ -1,9 +1,9 @@
 /* ========================================================================
- * Mobile advertising: v0.0.6
+ * Mobile advertising: v0.0.7
  *
  * ========================================================================
  * Copyright 2015 Alimov.
- * Licensed under MIT ()
+ * Licensed under MIT (https://github.com/AlimovRoostam/MobileAdvertising.git)
  * ======================================================================== */
 
 if (typeof jQuery == 'undefined') {
@@ -19,32 +19,21 @@ if (typeof jQuery == 'undefined') {
     var Mob = function (element, options) {
         this.$element = $(element);
         this.options  = options;
-        this.content = {};
-
-        $.proxy(this.requires(this.options));
 
         $.proxy(this.claim(this, function(){
             $.proxy(this.show(this));
-       }));
+        }));
     };
 
-    Mob.VERSION = '0.0.6';
-
+    Mob.VERSION = '0.0.7';
 
     Mob.DEFAULTS = {
         debug           : true,
         'json_folder'   : "http://chirurlx.bget.ru/assets/advertising/1",
-        'bs_css'        : true
     };
 
-    Mob.prototype.requires = function (e) {
-        if(e.bs_css.toString()){
-            $('<link/>',{
-                href: (typeof e.bs_css == "boolean" || e.bs_css == "true") ? e.bs_css = 'http://chirurlx.bget.ru/assets/css/bootstrap.css' : e.bs_css,
-                rel: 'stylesheet'
-            }).appendTo('head');
-        }
-    };
+    // Mobile show modal
+    // =====================
 
     Mob.prototype.show  = function (e) {
 
@@ -82,6 +71,9 @@ if (typeof jQuery == 'undefined') {
         e.$element.append(content1).fadeIn('slow');
     };
 
+    // Mobile advertising claim ajax to json
+    // =====================
+
     Mob.prototype.claim = function (e, callback) {
         var suffix = isMobile()[0].toLowerCase();
         $.ajax({
@@ -99,7 +91,6 @@ if (typeof jQuery == 'undefined') {
                     }
                     counter++;
                 });
-
             },
             error: function (data) {
 
@@ -111,7 +102,6 @@ if (typeof jQuery == 'undefined') {
     // =====================
 
     function Plugin(option) {
-
         return this.each(function () {
             var $this   = $(this),
                 data    = $this.data('mob.advertising'),
