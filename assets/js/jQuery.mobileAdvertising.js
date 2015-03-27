@@ -1,5 +1,5 @@
 /* ========================================================================
- * Mobile advertising: v0.0.8
+ * Mobile advertising: v0.1.0
  *
  * ========================================================================
  * Copyright 2015 Alimov.
@@ -11,6 +11,7 @@ if (typeof jQuery == 'undefined') {
 }
 
 +(function($){
+    'use strict';
 
     // Mobile advertising CLASS DEFINITION
     // ====================
@@ -27,7 +28,7 @@ if (typeof jQuery == 'undefined') {
         }));
     };
 
-    Mob.VERSION = '0.0.9';
+    Mob.VERSION = '0.1.0';
 
     Mob.DEFAULTS = {
         'json_folder'   : "/assets/advertising/"
@@ -75,29 +76,33 @@ if (typeof jQuery == 'undefined') {
     // =====================
 
     Mob.prototype.claim = function (e, callback) {
-        $.ajax({
+        var keyAdvertising  = ("suffix" in e) ? e.options[e.suffix] : false;
+
+        $.ajax({ //@TODO ПОДУМАТЬ как упростить и избавиться от 2 циклов
             url: e.options.json_folder + e.suffix + '.json',
-            dataType: "json",
-            success: function (data) {
+            dataType: 'json',
+            scriptCharset: 'utf-8',
+            timeout: 10000,
+            dataFilter: function(data, type){
+                if ((type == "json") && ("geoLocation" in e)) {
+                    var parsed_data = JSON.parse(data);
 
-                console.log(data); //@TODO remove
-
-                if("geoLocation" in e){ //@TODO переместить в dataFilter
-                    $.each(data, function (i, val) {
-                        if (val[0]["country"] !== e.geoLocation["country"]) {
-                            delete data[i];
+                    $.each(parsed_data, function (i, val) {
+                        if (!val[0]["country"]) return;
+                        if (val[0]["country"] !== e.geoLocation["country"]){
+                            if(keyAdvertising == i) keyAdvertising = false;
+                            delete parsed_data[i];
                         }
                     });
+                    return JSON.stringify(parsed_data)
                 }
-
-                console.log(data); //@TODO remove
-
-                var keyAdvertising  = (e.suffix in e) ? e.options[e.suffix] : Math.round(0.5 + Math.random() * (Object.keys(data).length)),
-                    counter         = 1;
+            },
+            success: function (data) {
+                var randomKey = Math.round(0.5 + Math.random() * (Object.keys(data).length)),
+                    counter   = 1;
 
                 $.each(data, function (i, val) {
-                    // console.log(val);
-                    if ((keyAdvertising == i || keyAdvertising == counter)) {
+                    if ((keyAdvertising == i) || (randomKey == counter)) {
                         e.content = val[0];
                         callback.call(e);
                         return false;
@@ -105,8 +110,8 @@ if (typeof jQuery == 'undefined') {
                     counter++;
                 });
             },
-            error: function (data) {
-                //@TODO Придумать что-то с ошибками
+            error: function (jqXHR, textStatus, errorThrown) {
+                console.log(jqXHR, textStatus, errorThrown);
             }
         });
     };
@@ -119,6 +124,7 @@ if (typeof jQuery == 'undefined') {
             var $this   = $(this),
                 data    = $this.data('mob.advertising'),
                 options = $.extend({}, Mob.DEFAULTS, $this.data(), typeof option == 'object' && option);
+
             if (!data) $this.data('mob.advertising', (data = new Mob(this, options)));
             if (typeof option == 'string') data[option](); //@TODO XXX
         })
@@ -178,4 +184,5 @@ if (typeof jQuery == 'undefined') {
             Plugin.call($('<div/>',{'data-ride': 'mobile-advertising'}).appendTo('body'))
         }
     });
+
 })(jQuery);
