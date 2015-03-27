@@ -1,5 +1,5 @@
 /* ========================================================================
- * Mobile advertising: v0.0.7
+ * Mobile advertising: v0.0.8
  *
  * ========================================================================
  * Copyright 2015 Alimov.
@@ -7,29 +7,30 @@
  * ======================================================================== */
 
 if (typeof jQuery == 'undefined') {
-    throw new Error('Mobile Advertising\'s JavaScript requires jQuery')
+    throw new Error('Mobile Advertising\'s JavaScript requires jQuery');
 }
 
 +(function($){
-    'use strict';
 
     // Mobile advertising CLASS DEFINITION
     // ====================
 
     var Mob = function (element, options) {
-        this.$element = $(element);
-        this.options  = options;
+
+        this.$element       = $(element);
+        this.options        = options;
+        this.suffix         = isMobile()[0].toLowerCase();
+        typeof ymaps == 'undefined' || (this.geoLocation = ymaps.geolocation);
 
         $.proxy(this.claim(this, function(){
             $.proxy(this.show(this));
         }));
     };
 
-    Mob.VERSION = '0.0.7';
+    Mob.VERSION = '0.0.8';
 
     Mob.DEFAULTS = {
-        debug           : true,
-        'json_folder'   : "http://chirurlx.bget.ru/assets/advertising/1",
+        'json_folder'   : "/assets/advertising/"
     };
 
     // Mobile show modal
@@ -38,52 +39,57 @@ if (typeof jQuery == 'undefined') {
     Mob.prototype.show  = function (e) {
 
         var content1 = '<div class="modal-dialog modal-sm">'+
-            '<div class="modal-content">'+
-            '<div class="modal-header color-white clearfix">'+
+                            '<div class="modal-content">'+
+                                '<div class="modal-header color-white clearfix">'+
 
-            '<div class="col-xs-8 not-padding-w">'+
-                //$('<h4/>', {
-                //    class: "modal-title color-white",
-                //    text: e.content.title
-                //});
-            '<h4 class="modal-title color-white">'+ e.content.title +'</h4>'+
-            '</div>'+
+                                    '<div class="col-xs-8 not-padding-w">'+
+                                        '<h4 class="modal-title color-white">'+ e.content.title +'</h4>'+
+                                    '</div>'+
 
-            '<div class="col-xs-4 not-padding-w">'+
-            '<div class="clearfix mb5px">'+
-            '<button type="button" class="close color-white" data-dismiss="modal" aria-label="Close"><span class="color-white" aria-hidden="true">&times;</span></button>'+
-            '</div>'+
-            '<a href="' + e.content.url + '" class="btn text-uppercase btn-success btn-xs notbdrs pull-right">Бесплатно</a>'+
-            '</div>'+
+                                    '<div class="col-xs-4 not-padding-w">'+
+                                        '<div class="clearfix mb5px">'+
+                                            '<button type="button" class="close color-white" data-dismiss="modal" aria-label="Close"><span class="color-white" aria-hidden="true">&times;</span></button>'+
+                                        '</div>'+
+                                        '<a href="' + e.content.url + '" class="btn text-uppercase btn-success btn-xs notbdrs pull-right">Бесплатно</a>'+
+                                    '</div>'+
 
-            '</div>'+
-            '<div class="modal-body">'+
-            e.content.content +
-            '</div>'+
-            '<div class="modal-footer text-center">'+
-            '<div class="clearfix mb5px">'+
-            '<a href="'+ e.content.url +'" class="btn btn-'+e.content.colorButton+' text-uppercase btn-block"><i class="glyphicon glyphicon-download-alt"></i> '+ e.content.textButton +'</a>'+
-            '</div>'+
+                                '</div>'+
 
-            '</div>'+
-            '</div>'+
-            '</div>';
+                                '<div class="modal-body">'+
+                                    e.content.content +
+                                '</div>'+
+
+                                '<div class="modal-footer text-center">'+
+                                    '<div class="clearfix mb5px">'+
+                                        '<a href="'+ e.content.url +'" class="btn btn-'+e.content.colorButton+' text-uppercase btn-block"><i class="glyphicon glyphicon-download-alt"></i> '+ e.content.textButton +'</a>'+
+                                    '</div>'+
+                                '</div>'+
+                            '</div>'+
+                        '</div>';
+
         e.$element.append(content1).fadeIn('slow');
+
     };
 
     // Mobile advertising claim ajax to json
     // =====================
 
     Mob.prototype.claim = function (e, callback) {
-        var suffix = isMobile()[0].toLowerCase();
+        console.log(e);
+
         $.ajax({
-            url: e.options.json_folder + suffix + '.json',
+            url: e.options.json_folder + e.suffix + '.json',
             dataType: "json",
             success: function (data) {
-                var keyAdvertising  = (suffix in e.options) ? e.options[suffix] : Math.round(0.5 + Math.random() * (Object.keys(data).length)),
+                var keyAdvertising  = (e.suffix in e) ? e.options[e.suffix] : Math.round(0.5 + Math.random() * (Object.keys(data).length)),
                     counter         = 1;
 
+                //@TODO Если карта не загружена return
+
+                //console.log(data);
+
                 $.each(data, function (i, val) {
+
                     if (keyAdvertising == i || keyAdvertising == counter) {
                         e.content = val[0];
                         callback.call(e);
@@ -93,7 +99,7 @@ if (typeof jQuery == 'undefined') {
                 });
             },
             error: function (data) {
-
+                //@TODO Придумать что-то с ошибками
             }
         });
     };
@@ -106,9 +112,8 @@ if (typeof jQuery == 'undefined') {
             var $this   = $(this),
                 data    = $this.data('mob.advertising'),
                 options = $.extend({}, Mob.DEFAULTS, $this.data(), typeof option == 'object' && option);
-
             if (!data) $this.data('mob.advertising', (data = new Mob(this, options)));
-            if (typeof option == 'string') data[option]()
+            if (typeof option == 'string') data[option](); //@TODO XXX
         })
     }
 
@@ -162,10 +167,8 @@ if (typeof jQuery == 'undefined') {
             Plugin.call($advertising, $advertising.data());
             counter++;
         });
-
         if(!counter){
             Plugin.call($('<div/>',{'data-ride': 'mobile-advertising'}).appendTo('body'))
         }
     });
-
 })(jQuery);
