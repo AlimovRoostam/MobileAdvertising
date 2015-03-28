@@ -1,5 +1,5 @@
 /* ========================================================================
- * Mobile advertising: v0.1.2
+ * Mobile advertising: v0.1.3
  *
  * ========================================================================
  * Copyright 2015 Alimov.
@@ -26,7 +26,7 @@ if (typeof jQuery == 'undefined') {
         }));
     };
 
-    Mob.VERSION = '0.1.2';
+    Mob.VERSION = '0.1.3';
 
     Mob.DEFAULTS = {
         'json_folder'   : "/assets/advertising/",
