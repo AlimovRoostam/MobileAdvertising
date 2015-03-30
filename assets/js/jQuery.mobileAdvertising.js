@@ -30,7 +30,7 @@ if (typeof jQuery == 'undefined') {
 
     Mob.DEFAULTS = {
         'json_folder'   : "/assets/advertising/",
-        'tpl_folder'    : "assets/templates/default/"
+        'tpl_folder'    : "/assets/templates/default/"
     };
 
     // Mobile show modal
@@ -74,7 +74,7 @@ if (typeof jQuery == 'undefined') {
     Mob.prototype.claim = function (e, callback) {
         var keyAdvertising  = ("suffix" in e) ? e.options[e.suffix] : false;
 
-        $.ajax({ //@TODO ПОДУМАТЬ как упростить и избавиться от 2 циклов
+        $.ajax({
             url: e.options.json_folder + e.suffix + '.json',
             dataType: 'json',
             scriptCharset: 'utf-8',
@@ -124,7 +124,7 @@ if (typeof jQuery == 'undefined') {
                 options = $.extend({}, Mob.DEFAULTS, $this.data(), typeof option == 'object' && option);
 
             if (!data) $this.data('mob.advertising', (data = new Mob(this, options)));
-            if (typeof option == 'string') data[option](); //@TODO XXX
+            if (typeof option == 'string') data[option]();
         })
     }
 
